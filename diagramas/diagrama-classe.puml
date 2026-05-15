@@ -5,6 +5,10 @@ skinparam shadowing false
 
 title Diagrama de Classes - SGO
 
+' =====================================================
+' CLASSES
+' =====================================================
+
 class Usuario {
     - id : int
     - nome : String
@@ -27,7 +31,6 @@ class Atleta {
     + editarAtleta() : void
     + removerAtleta() : void
     + listarAtletas() : List
-
 }
 
 class Pais {
@@ -44,7 +47,7 @@ class Competicao {
     - modalidade : String
     - data : Date
     - horario : String
-    - status : String
+    - status : StatusCompeticao
 
     + cadastrarCompeticao() : void
     + editarCompeticao() : void
@@ -61,13 +64,12 @@ class Local {
     + cadastrarLocal() : void
     + editarLocal() : void
     + listarLocais() : List
-
 }
 
 class Inscricao {
     - id : int
     - dataInscricao : Date
-    - status : String
+    - status : StatusInscricao
 
     + realizarInscricao() : void
     + cancelarInscricao() : void
@@ -77,7 +79,7 @@ class Inscricao {
 class Resultado {
     - id : int
     - colocacao : int
-    - medalha : String
+    - medalha : Medalha
 
     + registrarResultado() : void
     + editarResultado() : void
@@ -89,6 +91,28 @@ class RelatorioMedalhas {
 
     + gerarRelatorio() : void
     + consultarQuadroMedalhas() : List
+}
+
+' =====================================================
+' ENUMS
+' =====================================================
+
+enum Medalha {
+    OURO
+    PRATA
+    BRONZE
+}
+
+enum StatusCompeticao {
+    AGENDADA
+    EM_ANDAMENTO
+    FINALIZADA
+}
+
+enum StatusInscricao {
+    PENDENTE
+    CONFIRMADA
+    CANCELADA
 }
 
 ' =====================================================
@@ -114,11 +138,17 @@ Atleta "1" -- "0..*" Resultado : recebe >
 Competicao "1" -- "0..*" Resultado : gera >
 
 RelatorioMedalhas ..> Resultado : consulta
-
 RelatorioMedalhas ..> Pais : agrupa medalhas
 
 Organizador "1" -- "0..*" Competicao : gerencia >
-
 Organizador "1" -- "0..*" Resultado : registra >
+
+' =====================================================
+' RELAÇÃO COM ENUM
+' =====================================================
+
+Competicao ..> StatusCompeticao
+Inscricao ..> StatusInscricao
+Resultado ..> Medalha
 
 @enduml
