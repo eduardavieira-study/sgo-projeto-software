@@ -1,0 +1,214 @@
+@startuml
+
+title Sistema de Gestão das Olimpíadas (SGO)
+
+actor Organizador as O
+actor Atleta as A
+actor Usuario as U
+
+participant "Tela do Sistema" as Tela
+participant "ControleUsuario" as CU
+participant "ControleCompeticao" as CC
+participant "ControleLocal" as CL
+participant "ControleInscricao" as CI
+participant "ControleResultado" as CR
+participant "ControleRelatorio" as CRel
+
+database "PostgreSQL\nResultados" as Resultado
+database "PostgreSQL\nCompeticao" as Competicao
+database "PostgreSQL\nInscricao" as Inscricao
+database "PostgreSQL\nLocal" as Local
+
+' =====================================================
+' LOGIN
+' =====================================================
+
+== Login ==
+
+U -> Tela : realizarLogin(email, senha)
+activate Tela
+
+Tela -> CU : autenticarUsuario(email, senha)
+activate CU
+
+CU -> CU : validarCredenciais(email, senha)
+activate CU
+
+CU --> Tela : acessoLiberado(usuario)
+deactivate CU
+
+Tela --> U : loginRealizado()
+deactivate Tela
+
+' =====================================================
+' CADASTRO DE COMPETIÇÃO
+' =====================================================
+
+== Cadastro de Competição ==
+
+O -> Tela : cadastrarCompeticao(modalidade, data, horario)
+activate Tela
+
+Tela -> CC : solicitarCadastroCompeticao(dadosCompeticao)
+activate CC
+
+CC -> Competicao : criarCompeticao(dadosCompeticao)
+activate Competicao
+
+Competicao --> CC : competicaoCriada(competicao)
+deactivate Competicao
+
+CC --> Tela : cadastroCompeticaoRealizado()
+deactivate CC
+
+Tela --> O : competicaoCadastrada()
+deactivate Tela
+
+' =====================================================
+' CADASTRO DE LOCAL
+' =====================================================
+
+== Cadastro de Local ==
+
+O -> Tela : cadastrarLocal(nome, endereco, capacidade)
+activate Tela
+
+Tela -> CL : solicitarCadastroLocal(dadosLocal)
+activate CL
+
+CL -> Local : criarLocal(dadosLocal)
+activate Local
+
+Local --> CL : localCriado(local)
+deactivate Local
+
+CL --> Tela : cadastroLocalRealizado()
+deactivate CL
+
+Tela --> O : localCadastrado()
+deactivate Tela
+
+' =====================================================
+' ALOCAÇÃO DE LOCAL
+' =====================================================
+
+== Alocação de Local ==
+
+O -> Tela : alocarLocal(competicaoID, localID)
+activate Tela
+
+Tela -> CL : solicitarAlocacao(competicaoID, localID)
+activate CL
+
+CL -> Competicao : buscarCompeticao(competicaoID)
+activate Competicao
+
+Competicao --> CL : competicaoEncontrada(competicao)
+deactivate Competicao
+
+CL -> Local : verificarDisponibilidade(localID, data, horario)
+activate Local
+
+Local --> CL : localDisponivel()
+deactivate Local
+
+CL -> Competicao : associarLocal(localID)
+activate Competicao
+
+Competicao --> CL : localAssociado()
+deactivate Competicao
+
+CL --> Tela : alocacaoRealizada()
+deactivate CL
+
+Tela --> O : localAlocado()
+deactivate Tela
+
+' =====================================================
+' INSCRIÇÃO EM COMPETIÇÃO
+' =====================================================
+
+== Inscrição em Competição ==
+
+A -> Tela : inscreverEmCompeticao(atletaID, competicaoID)
+activate Tela
+
+Tela -> CI : solicitarInscricao(atletaID, competicaoID)
+activate CI
+
+CI -> Competicao : buscarCompeticao(competicaoID)
+activate Competicao
+
+Competicao --> CI : competicaoEncontrada()
+deactivate Competicao
+
+CI -> Inscricao : criarInscricao(atletaID, competicaoID)
+activate Inscricao
+
+Inscricao --> CI : inscricaoConfirmada(inscricao)
+deactivate Inscricao
+
+CI --> Tela : inscricaoRealizada()
+deactivate CI
+
+Tela --> A : inscricaoConfirmada()
+deactivate Tela
+
+' =====================================================
+' REGISTRO DE RESULTADOS
+' =====================================================
+
+== Registro de Resultados ==
+
+O -> Tela : registrarResultados(competicaoID, colocacoes)
+activate Tela
+
+Tela -> CR : solicitarRegistroResultado(dadosResultado)
+activate CR
+
+CR -> Competicao : buscarCompeticao(competicaoID)
+activate Competicao
+
+Competicao --> CR : competicaoFinalizada()
+deactivate Competicao
+
+CR -> Resultado : registrarResultado(dadosResultado)
+activate Resultado
+
+Resultado --> CR : resultadoRegistrado()
+deactivate Resultado
+
+CR --> Tela : registroConcluido()
+deactivate CR
+
+Tela --> O : resultadoRegistrado()
+deactivate Tela
+
+' =====================================================
+' RELATÓRIO DE MEDALHAS
+' =====================================================
+
+== Relatório de Medalhas ==
+
+U -> Tela : consultarQuadroMedalhas()
+activate Tela
+
+Tela -> CRel : solicitarRelatorio()
+activate CRel
+
+CRel -> Resultado : buscarResultados()
+activate Resultado
+
+Resultado --> CRel : listaResultados
+deactivate Resultado
+
+CRel -> CRel : calcularRankingMedalhas()
+activate CRel
+
+CRel --> Tela : relatorioGerado()
+deactivate CRel
+
+Tela --> U : relatorioExibido()
+deactivate Tela
+
+@enduml

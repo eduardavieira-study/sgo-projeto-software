@@ -1,9 +1,10 @@
 @startuml
 
-top to bottom direction
+left to right direction
 
 skinparam shadowing false
 skinparam nodeStyle rectangle
+skinparam componentStyle uml2
 
 title Diagrama de Implantação - SGO
 
@@ -24,146 +25,212 @@ Cliente --> Front : HTTPS
 ' API
 ' =====================================================
 
-component "API REST" as API
+node "Servidor API" {
+
+    component "API REST" as API
+}
 
 Front --> API : REST/HTTPS
 
 ' =====================================================
-' COMPETIÇÕES
+' INTERFACES
 ' =====================================================
+
+interface "ICompetições" as ICompeticoes
+interface "IAtletas" as IAtletas
+interface "IPaises" as IPaises
+interface "ILocais" as ILocais
+interface "IInscricoes" as IInscricoes
+interface "IResultados" as IResultados
+interface "IRelatorios" as IRelatorios
+
+' =====================================================
+' LINHA 1
+' =====================================================
+
+together {
 
 cloud "AWS - Competições" {
 
     node "Docker - Competições" {
 
-        component "Serviço de Competições" as Competicoes
+        package "Competições" {
+
+            component "Serviço de Competições" as Competicoes
+
+            interface "IDBCompeticoes" as IDBC
+
+            database "PostgreSQL\nCompetições DB" as DBCompeticoes
+
+            Competicoes -- ICompeticoes
+            Competicoes --( IDBC :TCP/IP
+            DBCompeticoes -- IDBC
+        }
     }
-
-    database "PostgreSQL\nCompetições DB" as DBCompeticoes
 }
-
-' =====================================================
-' ATLETAS
-' =====================================================
 
 cloud "AWS - Atletas" {
 
     node "Docker - Atletas" {
 
-        component "Serviço de Atletas" as Atletas
-    }
+        package " Atletas" {
 
-    database "PostgreSQL\nAtletas DB" as DBAtletas
+            component "Serviço de Atletas" as Atletas
+
+            interface "IDBAtletas" as IDBA
+
+            database "PostgreSQL\nAtletas DB" as DBAtletas
+
+            Atletas -- IAtletas
+            Atletas --( IDBA :TCP/IP
+            DBAtletas -- IDBA
+        }
+    }
+}
+
 }
 
 ' =====================================================
-' PAÍSES
+' LINHA 2
 ' =====================================================
+
+together {
 
 cloud "AWS - Países" {
 
     node "Docker - Países" {
 
-        component "Serviço de Países" as Paises
+        package " Países" {
+
+            component "Serviço de Países" as Paises
+
+            interface "IDBPaises" as IDBP
+
+            database "PostgreSQL\nPaíses DB" as DBPaises
+
+            Paises -- IPaises
+            Paises --( IDBP :TCP/IP
+            DBPaises -- IDBP
+        }
     }
-
-    database "PostgreSQL\nPaíses DB" as DBPaises
 }
-
-' =====================================================
-' LOCAIS
-' =====================================================
 
 cloud "AWS - Locais" {
 
     node "Docker - Locais" {
 
-        component "Serviço de Locais" as Locais
-    }
+        package " Locais" {
 
-    database "PostgreSQL\nLocais DB" as DBLocais
+            component "Serviço de Locais" as Locais
+
+            interface "IDBLocais" as IDBL
+
+            database "PostgreSQL\nLocais DB" as DBLocais
+
+            Locais -- ILocais
+            Locais --( IDBL :TCP/IP
+            DBLocais -- IDBL
+        }
+    }
+}
+
 }
 
 ' =====================================================
-' INSCRIÇÕES
+' LINHA 3
 ' =====================================================
+
+together {
 
 cloud "AWS - Inscrições" {
 
     node "Docker - Inscrições" {
 
-        component "Serviço de Inscrições" as Inscricoes
+        package " Inscrições" {
+
+            component "Serviço de Inscrições" as Inscricoes
+
+            interface "IDBInscricoes" as IDBI
+
+            database "PostgreSQL\nInscrições DB" as DBInscricoes
+
+            Inscricoes -- IInscricoes
+            Inscricoes --( IDBI
+            DBInscricoes -- IDBI
+        }
     }
-
-    database "PostgreSQL\nInscrições DB" as DBInscricoes
 }
-
-' =====================================================
-' RESULTADOS
-' =====================================================
 
 cloud "AWS - Resultados" {
 
     node "Docker - Resultados" {
 
-        component "Serviço de Resultados" as Resultados
-    }
+        package " Resultados" {
 
-    database "PostgreSQL\nResultados DB" as DBResultados
+            component "Serviço de Resultados" as Resultados
+
+            interface "IDBResultados" as IDBRes
+
+            database "PostgreSQL\nResultados DB" as DBResultados
+
+            Resultados -- IResultados
+            Resultados --( IDBRes :TCP/IP
+            DBResultados -- IDBRes
+        }
+    }
+}
+
 }
 
 ' =====================================================
-' RELATÓRIOS
+' LINHA 4
 ' =====================================================
 
 cloud "AWS - Relatórios" {
 
     node "Docker - Relatórios" {
 
-        component "Serviço de Relatórios" as Relatorios
-    }
+        package " Relatórios" {
 
-    database "PostgreSQL\nRelatórios DB" as DBRelatorios
+            component "Serviço de Relatórios" as Relatorios
+
+            interface "IDBRelatorio" as IDBR
+
+            database "PostgreSQL\nRelatórios DB" as DBRelatorios
+
+            Relatorios -- IRelatorios
+            Relatorios --( IDBR :TCP/IP
+            DBRelatorios -- IDBR
+        }
+    }
 }
 
 ' =====================================================
-' COMUNICAÇÃO
+' API REQUER INTERFACES
 ' =====================================================
 
-API --> Competicoes : REST
-API --> Atletas : REST
-API --> Paises : REST
-API --> Locais : REST
-API --> Inscricoes : REST
-API --> Resultados : REST
-API --> Relatorios : REST
+API --( ICompeticoes : REST
+API --( IAtletas : REST
+API --( IPaises : REST
+API --( ILocais : REST
+API --( IInscricoes : REST
+API --( IResultados : REST
+API --( IRelatorios : REST
 
 ' =====================================================
-' COMUNICAÇÃO ENTRE SERVIÇOS
+' SERVIÇOS REQUEREM INTERFACES
 ' =====================================================
 
-Competicoes ..> Atletas
-Competicoes ..> Paises
-Competicoes ..> Locais
+Competicoes --( IAtletas 
+Competicoes --( IPaises
+Competicoes --( ILocais
 
-Inscricoes ..> Competicoes
+Inscricoes --( ICompeticoes
 
-Resultados ..> Competicoes
-Resultados ..> Atletas
+Resultados --( ICompeticoes
+Resultados --( IAtletas
 
-Relatorios ..> Resultados
-Relatorios ..> Paises
-
-' =====================================================
-' BANCO DE DADOS
-' =====================================================
-
-Competicoes --> DBCompeticoes : TCP/IP
-Atletas --> DBAtletas : TCP/IP
-Paises --> DBPaises : TCP/IP
-Locais --> DBLocais : TCP/IP
-Inscricoes --> DBInscricoes : TCP/IP
-Resultados --> DBResultados : TCP/IP
-Relatorios --> DBRelatorios : TCP/IP
+Relatorios --( IResultados
+Relatorios --( IPaises
 
 @enduml

@@ -1,63 +1,181 @@
 @startuml
 
+
 skinparam componentStyle uml2
+left to right direction
+
+title Diagrama de Componentes - SGO
 
 actor Cliente
 
-
-    [API REST] as API
-
-    component "Competições" as Competicoes
-    component "Atletas" as Atletas
-    component "Países" as Paises
-    component "Locais" as Locais
-    component "Inscrições" as Inscricoes
-    component "Resultados" as Resultados
-    component "Relatórios" as Relatorios
-
-
-package "Docker" {
-
-    database "PostgreSQL\nCompetições DB" as DBCompeticoes
-    database "PostgreSQL\nAtletas DB" as DBAtletas
-    database "PostgreSQL\nPaíses DB" as DBPaises
-    database "PostgreSQL\nLocais DB" as DBLocais
-    database "PostgreSQL\nInscrições DB" as DBInscricoes
-    database "PostgreSQL\nResultados DB" as DBResultados
-    database "PostgreSQL\nRelatórios DB" as DBRelatorios
-}
+[API REST] as API
 
 Cliente --> API : HTTP
 
-API --> Competicoes : REST
-API --> Atletas : REST
-API --> Paises : REST
-API --> Locais : REST
-API --> Inscricoes : REST
-API --> Resultados : REST
-API --> Relatorios : REST
+' =====================================================
+' INTERFACES
+' =====================================================
 
-' Interfaces requeridas
-Competicoes ..> Atletas : requer
-Competicoes ..> Paises : requer
+interface "ICompetições" as ICompeticoes
+interface "IAtletas" as IAtletas
+interface "IPaises" as IPaises
+interface "ILocais" as ILocais
+interface "IInscricoes" as IInscricoes
+interface "IResultados" as IResultados
+interface "IRelatorios" as IRelatorios
 
-Competicoes ..> Locais : requer
 
-Inscricoes ..> Competicoes : requer
+together {
 
-Resultados ..> Competicoes : requer
-Resultados ..> Atletas : requer
+node "Docker - Competições" {
 
-Relatorios ..> Resultados : requer
-Relatorios ..> Paises : requer
+    package "Serviço Competições" {
 
-' Banco por serviço
-Competicoes --> DBCompeticoes : TCP/IP
-Atletas --> DBAtletas : TCP/IP
-Paises --> DBPaises : TCP/IP
-Locais --> DBLocais : TCP/IP
-Inscricoes --> DBInscricoes : TCP/IP
-Resultados --> DBResultados : TCP/IP
-Relatorios --> DBRelatorios : TCP/IP
+        component "Competições" as Competicoes
 
-@enduml 
+        interface "IDBCompeticoes" as IDBC
+
+        database "PostgreSQL\nCompetições DB" as DBCompeticoes
+
+        Competicoes -- ICompeticoes
+        Competicoes --( IDBC :TCP/IP
+        DBCompeticoes -- IDBC
+    }
+}
+
+node "Docker - Atletas" {
+
+    package "Serviço Atletas" {
+
+        component "Atletas" as Atletas
+
+        interface "IDBAtletas" as IDBA
+
+        database "PostgreSQL\nAtletas DB" as DBAtletas
+
+        Atletas -- IAtletas
+        Atletas --( IDBA :TCP/IP
+        DBAtletas -- IDBA
+    }
+}
+
+}
+
+
+together {
+
+node "Docker - Países" {
+
+    package "Serviço Países" {
+
+        component "Países" as Paises
+
+        interface "IDBPaises" as IDBP
+
+        database "PostgreSQL\nPaíses DB" as DBPaises
+
+        Paises -- IPaises
+        Paises --( IDBP :TCP/IP
+        DBPaises -- IDBP
+    }
+}
+
+node "Docker - Locais" {
+
+    package "Serviço Locais" {
+
+        component "Locais" as Locais
+
+        interface "IDBLocais" as IDBL
+
+        database "PostgreSQL\nLocais DB" as DBLocais
+
+        Locais -- ILocais
+        Locais --( IDBL :TCP/IP
+        DBLocais -- IDBL
+    }
+}
+
+}
+
+
+together {
+
+node "Docker - Inscrições" {
+
+    package "Serviço Inscrições" {
+
+        component "Inscrições" as Inscricoes
+
+        interface "IDBInscricoes" as IDBI
+
+        database "PostgreSQL\nInscrições DB" as DBInscricoes
+
+        Inscricoes -- IInscricoes
+        Inscricoes --( IDBI :TCP/IP
+        DBInscricoes -- IDBI
+    }
+}
+
+node "Docker - Resultados" {
+
+    package "Serviço Resultados" {
+
+        component "Resultados" as Resultados
+
+        interface "IDBResultados" as IDBRes
+
+        database "PostgreSQL\nResultados DB" as DBResultados
+
+        Resultados -- IResultados
+        Resultados --( IDBRes :TCP/IP
+        DBResultados -- IDBRes
+    }
+}
+
+}
+node "Docker - Relatórios" {
+
+    package "Serviço Relatórios" {
+
+        component "Relatórios" as Relatorios
+
+        interface "IDBRelatorio" as IDBR
+
+        database "PostgreSQL\nRelatórios DB" as DBRelatorios
+
+        Relatorios -- IRelatorios
+        Relatorios --( IDBR :TCP/IP
+        DBRelatorios -- IDBR
+    }
+}
+
+' =====================================================
+' API REQUER INTERFACES
+' =====================================================
+
+API --( ICompeticoes : REST
+API --( IAtletas : REST
+API --( IPaises : REST
+API --( ILocais : REST
+API --( IInscricoes : REST
+API --( IResultados : REST
+API --( IRelatorios : REST
+
+' =====================================================
+' SERVIÇOS REQUEREM INTERFACES
+' =====================================================
+
+Competicoes --( IAtletas
+Competicoes --( IPaises
+Competicoes --( ILocais
+
+Inscricoes --( ICompeticoes
+
+Resultados --( ICompeticoes
+Resultados --( IAtletas
+
+Relatorios --( IResultados
+Relatorios --( IPaises
+
+@enduml

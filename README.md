@@ -74,6 +74,9 @@ As imagens dos diagramas geradas a partir dos arquivos PlantUML estão na pasta 
 
 	![Diagrama de Pacotes](images/pacotes.png)
 
+- **Diagrama de Sequência**
+	![Diagrama de Sequencia](images/sequencia.png)
+
 ## Onde encontrar mais
 
 - Arquivos PlantUML: `diagramas/` (ex.: `diagramas/diagrama-caso-uso.puml`, `diagramas/diagrama-classe.puml`).
