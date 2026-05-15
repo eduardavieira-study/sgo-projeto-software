@@ -1,0 +1,124 @@
+@startuml
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+title Diagrama de Classes - SGO
+
+class Usuario {
+    - id : int
+    - nome : String
+    - email : String
+    - senha : String
+
+    + login() : boolean
+    + logout() : void
+}
+
+class Organizador {
+    - cargo : String
+}
+
+class Atleta {
+    - numeroRegistro : String
+    - idade : int
+
+    + cadastrarAtleta() : void
+    + editarAtleta() : void
+    + removerAtleta() : void
+    + listarAtletas() : List
+
+}
+
+class Pais {
+    - id : int
+    - nome : String
+    - sigla : String
+
+    + cadastrarPais() : void
+    + listarPaises() : List
+}
+
+class Competicao {
+    - id : int
+    - modalidade : String
+    - data : Date
+    - horario : String
+    - status : String
+
+    + cadastrarCompeticao() : void
+    + editarCompeticao() : void
+    + excluirCompeticao() : void
+    + listarCompeticoes() : List
+}
+
+class Local {
+    - id : int
+    - nome : String
+    - endereco : String
+    - capacidade : int
+
+    + cadastrarLocal() : void
+    + editarLocal() : void
+    + listarLocais() : List
+
+}
+
+class Inscricao {
+    - id : int
+    - dataInscricao : Date
+    - status : String
+
+    + realizarInscricao() : void
+    + cancelarInscricao() : void
+    + listarInscricoes() : List
+}
+
+class Resultado {
+    - id : int
+    - colocacao : int
+    - medalha : String
+
+    + registrarResultado() : void
+    + editarResultado() : void
+    + consultarResultados() : List
+}
+
+class RelatorioMedalhas {
+    - dataGeracao : Date
+
+    + gerarRelatorio() : void
+    + consultarQuadroMedalhas() : List
+}
+
+' =====================================================
+' HERANÇA
+' =====================================================
+
+Organizador --|> Usuario
+Atleta --|> Usuario
+
+' =====================================================
+' RELACIONAMENTOS
+' =====================================================
+
+Pais "1" -- "0..*" Atleta : possui >
+
+Local "1" -- "0..*" Competicao : recebe >
+
+Atleta "1" -- "0..*" Inscricao : realiza >
+Competicao "1" -- "0..*" Inscricao : possui >
+
+Atleta "1" -- "0..*" Resultado : recebe >
+
+Competicao "1" -- "0..*" Resultado : gera >
+
+RelatorioMedalhas ..> Resultado : consulta
+
+RelatorioMedalhas ..> Pais : agrupa medalhas
+
+Organizador "1" -- "0..*" Competicao : gerencia >
+
+Organizador "1" -- "0..*" Resultado : registra >
+
+@enduml

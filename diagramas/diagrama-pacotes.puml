@@ -1,0 +1,200 @@
+@startuml
+
+top to bottom direction
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+title Diagrama de Pacotes - SGO (Arquitetura em Camadas)
+
+' =====================================================
+' CONTROLLER
+' =====================================================
+
+package "controller" {
+
+    together {
+        class CompeticaoController
+        class AtletaController
+        class PaisController
+    }
+
+    together {
+        class LocalController
+        class InscricaoController
+    }
+
+    together {
+        class ResultadoController
+        class RelatorioController
+    }
+}
+
+' =====================================================
+' DTO
+' =====================================================
+
+package "dto" {
+
+    together {
+        class CompeticaoDTO
+        class AtletaDTO
+        class PaisDTO
+    }
+
+    together {
+        class LocalDTO
+        class InscricaoDTO
+    }
+
+    together {
+        class ResultadoDTO
+        class RelatorioDTO
+    }
+}
+
+' =====================================================
+' SERVICE
+' =====================================================
+
+package "service" {
+
+    together {
+        class CompeticaoService
+        class AtletaService
+        class PaisService
+    }
+
+    together {
+        class LocalService
+        class InscricaoService
+    }
+
+    together {
+        class ResultadoService
+        class RelatorioService
+    }
+}
+
+' =====================================================
+' REPOSITORY
+' =====================================================
+
+package "repository" {
+
+    together {
+        interface CompeticaoRepository
+        interface AtletaRepository
+        interface PaisRepository
+    }
+
+    together {
+        interface LocalRepository
+        interface InscricaoRepository
+    }
+
+    together {
+        interface ResultadoRepository
+    }
+}
+
+' =====================================================
+' MODEL
+' =====================================================
+
+package "model" {
+
+    together {
+        class Usuario
+        class Organizador
+        class Atleta
+    }
+
+    together {
+        class Pais
+        class Competicao
+        class Local
+    }
+
+    together {
+        class Inscricao
+        class Resultado
+        class RelatorioMedalhas
+    }
+}
+
+' =====================================================
+' ENUM
+' =====================================================
+
+package "enum" {
+
+    together {
+        enum Medalha {
+            OURO
+            PRATA
+            BRONZE
+        }
+
+        enum StatusCompeticao {
+            AGENDADA
+            EM_ANDAMENTO
+            FINALIZADA
+        }
+
+        enum StatusInscricao {
+            PENDENTE
+            CONFIRMADA
+            CANCELADA
+        }
+    }
+}
+
+' =====================================================
+' EXCEPTION
+' =====================================================
+
+package "exception" {
+
+    together {
+        class CompeticaoNaoEncontradaException
+        class AtletaNaoEncontradoException
+    }
+
+    together {
+        class LocalIndisponivelException
+        class InscricaoInvalidaException
+    }
+
+    together {
+        class ResultadoNaoEncontradoException
+    }
+}
+
+' =====================================================
+' RELACIONAMENTOS
+' =====================================================
+
+controller ..> dto
+controller ..> service
+
+service ..> repository
+service ..> model
+service ..> exception
+service ..> enum
+
+repository ..> model
+
+dto ..> model
+
+model ..> enum
+
+' =====================================================
+' HERANÇA
+' =====================================================
+
+Organizador --|> Usuario
+Atleta --|> Usuario
+
+@enduml

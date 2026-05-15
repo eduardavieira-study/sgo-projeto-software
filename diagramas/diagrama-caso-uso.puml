@@ -1,0 +1,67 @@
+@startuml diagrama-de-caso-de-uso
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Usuário" as Usuario
+actor "Organizador" as Org
+actor "Atleta" as Atleta
+
+' Generalização de atores
+Org --|> Usuario
+Atleta --|> Usuario
+
+rectangle "Sistema de Gestão das Olimpíadas (SGO)" {
+
+    together {
+        package "Gestão de Competições" {
+            usecase "US01 - Cadastrar Competição" as UC01
+            usecase "US02 - Editar Competição" as UC02
+            usecase "US03 - Excluir Competição" as UC03
+            usecase "US05 - Consultar Competições" as UC05
+        }
+        package "Gestão de Locais" {
+            usecase "US06 - Alocar Local para Competição" as UC06
+            usecase "US07 - Consultar Agenda de Locais" as UC07
+        }
+    }
+
+    together {
+        package "Inscrições" {
+            usecase "US04 - Inscrever Atleta em Competição" as UC04
+        }
+        package "Controle de Resultados" {
+            usecase "US08 - Registrar Resultados" as UC08
+            usecase "US09 - Consultar Resultados" as UC09
+        }
+        package "Relatórios de Medalhas" {
+            usecase "US10 - Gerar Relatório de Medalhas" as UC10
+            usecase "US11 - Consultar Quadro de Medalhas" as UC11
+        }
+    }
+}
+
+' Usuário (ator base) — ações compartilhadas
+Usuario --> UC05
+Usuario --> UC09
+Usuario --> UC11
+Usuario --> UC07
+
+' Organizador — ações exclusivas
+Org --> UC01
+Org --> UC02
+Org --> UC03
+Org --> UC06
+Org --> UC08
+Org --> UC10
+
+' Atleta — ações exclusivas
+Atleta --> UC04
+
+' include
+UC02 .> UC05 : <<include>>
+UC03 .> UC05 : <<include>>
+UC06 .> UC07 : <<include>>
+UC04 .> UC05 : <<include>>
+
+@enduml

@@ -1,0 +1,63 @@
+@startuml
+
+skinparam componentStyle uml2
+
+actor Cliente
+
+
+    [API REST] as API
+
+    component "Competições" as Competicoes
+    component "Atletas" as Atletas
+    component "Países" as Paises
+    component "Locais" as Locais
+    component "Inscrições" as Inscricoes
+    component "Resultados" as Resultados
+    component "Relatórios" as Relatorios
+
+
+package "Docker" {
+
+    database "PostgreSQL\nCompetições DB" as DBCompeticoes
+    database "PostgreSQL\nAtletas DB" as DBAtletas
+    database "PostgreSQL\nPaíses DB" as DBPaises
+    database "PostgreSQL\nLocais DB" as DBLocais
+    database "PostgreSQL\nInscrições DB" as DBInscricoes
+    database "PostgreSQL\nResultados DB" as DBResultados
+    database "PostgreSQL\nRelatórios DB" as DBRelatorios
+}
+
+Cliente --> API : HTTP
+
+API --> Competicoes : REST
+API --> Atletas : REST
+API --> Paises : REST
+API --> Locais : REST
+API --> Inscricoes : REST
+API --> Resultados : REST
+API --> Relatorios : REST
+
+' Interfaces requeridas
+Competicoes ..> Atletas : requer
+Competicoes ..> Paises : requer
+
+Competicoes ..> Locais : requer
+
+Inscricoes ..> Competicoes : requer
+
+Resultados ..> Competicoes : requer
+Resultados ..> Atletas : requer
+
+Relatorios ..> Resultados : requer
+Relatorios ..> Paises : requer
+
+' Banco por serviço
+Competicoes --> DBCompeticoes : TCP/IP
+Atletas --> DBAtletas : TCP/IP
+Paises --> DBPaises : TCP/IP
+Locais --> DBLocais : TCP/IP
+Inscricoes --> DBInscricoes : TCP/IP
+Resultados --> DBResultados : TCP/IP
+Relatorios --> DBRelatorios : TCP/IP
+
+@enduml 

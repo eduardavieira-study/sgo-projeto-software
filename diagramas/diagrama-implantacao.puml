@@ -1,0 +1,169 @@
+@startuml
+
+top to bottom direction
+
+skinparam shadowing false
+skinparam nodeStyle rectangle
+
+title Diagrama de Implantação - SGO
+
+actor "Cliente" as Cliente
+
+' =====================================================
+' FRONTEND
+' =====================================================
+
+node "Cliente Web" {
+
+    artifact "Next.js Frontend" as Front
+}
+
+Cliente --> Front : HTTPS
+
+' =====================================================
+' API
+' =====================================================
+
+component "API REST" as API
+
+Front --> API : REST/HTTPS
+
+' =====================================================
+' COMPETIÇÕES
+' =====================================================
+
+cloud "AWS - Competições" {
+
+    node "Docker - Competições" {
+
+        component "Serviço de Competições" as Competicoes
+    }
+
+    database "PostgreSQL\nCompetições DB" as DBCompeticoes
+}
+
+' =====================================================
+' ATLETAS
+' =====================================================
+
+cloud "AWS - Atletas" {
+
+    node "Docker - Atletas" {
+
+        component "Serviço de Atletas" as Atletas
+    }
+
+    database "PostgreSQL\nAtletas DB" as DBAtletas
+}
+
+' =====================================================
+' PAÍSES
+' =====================================================
+
+cloud "AWS - Países" {
+
+    node "Docker - Países" {
+
+        component "Serviço de Países" as Paises
+    }
+
+    database "PostgreSQL\nPaíses DB" as DBPaises
+}
+
+' =====================================================
+' LOCAIS
+' =====================================================
+
+cloud "AWS - Locais" {
+
+    node "Docker - Locais" {
+
+        component "Serviço de Locais" as Locais
+    }
+
+    database "PostgreSQL\nLocais DB" as DBLocais
+}
+
+' =====================================================
+' INSCRIÇÕES
+' =====================================================
+
+cloud "AWS - Inscrições" {
+
+    node "Docker - Inscrições" {
+
+        component "Serviço de Inscrições" as Inscricoes
+    }
+
+    database "PostgreSQL\nInscrições DB" as DBInscricoes
+}
+
+' =====================================================
+' RESULTADOS
+' =====================================================
+
+cloud "AWS - Resultados" {
+
+    node "Docker - Resultados" {
+
+        component "Serviço de Resultados" as Resultados
+    }
+
+    database "PostgreSQL\nResultados DB" as DBResultados
+}
+
+' =====================================================
+' RELATÓRIOS
+' =====================================================
+
+cloud "AWS - Relatórios" {
+
+    node "Docker - Relatórios" {
+
+        component "Serviço de Relatórios" as Relatorios
+    }
+
+    database "PostgreSQL\nRelatórios DB" as DBRelatorios
+}
+
+' =====================================================
+' COMUNICAÇÃO
+' =====================================================
+
+API --> Competicoes : REST
+API --> Atletas : REST
+API --> Paises : REST
+API --> Locais : REST
+API --> Inscricoes : REST
+API --> Resultados : REST
+API --> Relatorios : REST
+
+' =====================================================
+' COMUNICAÇÃO ENTRE SERVIÇOS
+' =====================================================
+
+Competicoes ..> Atletas
+Competicoes ..> Paises
+Competicoes ..> Locais
+
+Inscricoes ..> Competicoes
+
+Resultados ..> Competicoes
+Resultados ..> Atletas
+
+Relatorios ..> Resultados
+Relatorios ..> Paises
+
+' =====================================================
+' BANCO DE DADOS
+' =====================================================
+
+Competicoes --> DBCompeticoes : TCP/IP
+Atletas --> DBAtletas : TCP/IP
+Paises --> DBPaises : TCP/IP
+Locais --> DBLocais : TCP/IP
+Inscricoes --> DBInscricoes : TCP/IP
+Resultados --> DBResultados : TCP/IP
+Relatorios --> DBRelatorios : TCP/IP
+
+@enduml

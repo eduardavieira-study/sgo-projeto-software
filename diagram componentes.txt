@@ -1,0 +1,26 @@
+Serviços:
+
+Competicoes
+Atletas
+Paises
+Locais
+Inscricoes
+Resultados
+Relatorios
+
+---
+
+Cliente -(HTTP)-> API Rest
+
+API Rest -(REST)-> Serviços
+
+Serviçoes -(TCP/IP)-> Docker engloba o PostagreSQL(Banco de dados) : Um banco de dados por Serviçoes
+
+---
+
+Competicao requere Aluno e Pais
+Inscricao requere Competicao
+Locais requere Competicoes
+Resultados requere competicao e Atletas
+Relatorio requer Resultado e Pais
+
